@@ -1,15 +1,42 @@
-//
-//  main.cpp
-//  LACPP-Assignment-1
-//
-//  Created by Desislava Stoyanova on 9/20/15.
-//  Copyright © 2015 Desislava Stoyanova. All rights reserved.
-//
-
 #include <iostream>
+#include <thread>
+#include <mutex>
+#include <vector>
+
+using namespace std;
+
+float sum = 0.0;
+mutex m;
+
+float f(int x) {
+    return 4/(1+x*x);
+}
+
+void area(float a,float b,float c) {
+    m.lock();
+    sum += (a+b)*c/2;
+    m.unlock();
+}
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    cout << "Enter the number of trapezes: ";
+    int trapezes; cin >> trapezes;
+    cout << "Enter the number of threads: ";
+    int threads; cin >> threads;
+    
+    vector<thread> th;
+    
+    float h = 1/trapezes;
+    
+    for (int i=0; i<1; i+=h) {
+        th.push_back(thread(area,f(i),f(i+h),h));
+    }
+    
+    for (auto &t : th) {
+        t.join();
+    }
+    
+    cout << "Sum = " << sum << endl;
+    
     return 0;
 }
