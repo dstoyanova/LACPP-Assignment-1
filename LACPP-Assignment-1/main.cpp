@@ -3,12 +3,14 @@
 #include <thread>
 #include <mutex>
 #include <vector>
+#include <ctime>
 
 using namespace std;
 
 // Holds the final result
 float sum = 0.0;
 mutex m;
+clock_t t;
 
 float f(float x) {
     return 4.0 / (1.0 + x*x);
@@ -23,10 +25,13 @@ void func(float start,float end,float height) {
 }
 
 int main(int argc, const char * argv[]) {
-    cout << "Enter the number of trapezes: ";
-    int trapezes; cin >> trapezes;
-    cout << "Enter the number of threads: ";
-    int threads; cin >> threads;
+    int trapezes, threads;
+    do {
+        cout << "Enter the number of trapezes: ";
+        cin >> trapezes;
+        cout << "Enter the number of threads: ";
+        cin >> threads;
+    } while (threads > trapezes);
     
     vector<thread> th;
     
@@ -49,11 +54,14 @@ int main(int argc, const char * argv[]) {
         }
     }
     
+    t = clock();
     for (auto &t : th) {
         t.join();
     }
+    t = clock() - t;
     
     cout << "Sum = " << sum << endl;
+    cout << "It takes " << (float)t / CLOCKS_PER_SEC << endl;
     
     return 0;
 } 
